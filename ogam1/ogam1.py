@@ -6,8 +6,7 @@ from kivy.uix.screenmanager import Screen, ScreenManager, SlideTransition
 from kivy.uix.widget import WidgetMetaclass
 
 class Ogam1(App):
-	def build(self):
-		pass
+	pass
 
 class ScreenStackManager(ScreenManager):
 	stack = ListProperty()
@@ -22,12 +21,13 @@ class ScreenStackManager(ScreenManager):
 
 	def __init__(self, **kwargs):
 		ScreenManager.__init__(self, **kwargs)
+		instance.push = self.push
+		instance.pop = self.pop
 
 		for screen in self.all_screens:
 			screen = screen()
 			self.add_widget(screen)
 			if screen.default:
-				print screen.name
 				self.current = screen.name
 
 	def push(self, new):
@@ -51,16 +51,17 @@ class NamedScreen(Screen):
 			if name != 'NamedScreen':
 				ScreenStackManager.add_screen(cls)
 
-				try:
-					Logger.debug('NamedScreen: Loading %s.kv' % name)
-					Builder.load_file(name + '.kv', rulesonly=True)
-				except IOError:
-					Logger.debug('NamedScreen: File %s.kv not found' % name)
-
 	def __init__(self, **kwargs):
-		Screen.__init__(self, **kwargs)
 		name = self.__class__.__name__
 		self.name = name[:-6] if name.endswith('Screen') else name
+		setattr(instance, name, lambda: instance.push(self.name))
+		try:
+			Logger.debug('NamedScreen: Loading %s.kv' % name)
+			Builder.load_file(name + '.kv', rulesonly=True)
+		except IOError:
+			Logger.debug('NamedScreen: File %s.kv not found' % name)
+
+		Screen.__init__(self, **kwargs)
 
 class MainScreen(NamedScreen):
 	default = True
@@ -69,4 +70,5 @@ class FooScreen(NamedScreen):
 	pass
 
 if __name__=='__main__':
-	Ogam1().run()
+	instance = Ogam1()
+	instance.run()
