@@ -1,14 +1,8 @@
 from kivy.app import App
 from kivy.logger import Logger
-from screenstackmanager import NamedScreen
+import screens
 
 class Ogam1(App):
-	pass
-
-class MainScreen(NamedScreen):
-	default = True
-
-class FooScreen(NamedScreen):
 	pass
 
 if __name__=='__main__':
