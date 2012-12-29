@@ -21,6 +21,8 @@ class ScreenStackManager(ScreenManager):
 		App.instance.pushScreen = self.push
 		App.instance.popScreen = self.pop
 
+		self.transition = SlideTransition()
+
 		for screen in self.all_screens:
 			screen = screen()
 			self.add_widget(screen)
@@ -33,7 +35,7 @@ class ScreenStackManager(ScreenManager):
 		cur = self.get_screen(self.current)
 		cur.visible = False
 		self.stack.append(self.current)
-		self.transition = SlideTransition(direction='left')
+		self.transition.direction = 'left'
 		self.current = new
 		new = self.get_screen(self.current)
 		new.active = True
@@ -46,7 +48,7 @@ class ScreenStackManager(ScreenManager):
 		cur = self.get_screen(self.current)
 		cur.visible = False
 		cur.active = False
-		self.transition = SlideTransition(direction='right')
+		self.transition.direction = 'right'
 		self.current = self.stack.pop()
 		new = self.get_screen(self.current)
 		new.visible = True
